@@ -11,26 +11,29 @@ if (isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0) {
 
 $offset = ($page - 1) * $limit;
 
-$total_query = "SELECT COUNT(*) AS total from books b left join categories c on c.category_id = b.category_id ";
-$total_result = mysqli_query($conn, $total_query);
-$total_row = mysqli_fetch_assoc($total_result);
-$total_books = $total_row['total'];
-
-$total_pages = ceil($total_books / $limit);
-
 if ($_SERVER['REQUEST_METHOD'] ==  'GET') {
+    $sort = 'asc';
+    $search_title = $_GET['search_title'] ?? "";
+    $search_author = $_GET['search_author'] ?? "";
+    $search_category = $_GET['search_category'] ?? "";
+
+    $total_query = "SELECT COUNT(*) AS total from books b left join categories c on c.category_id = b.category_id where b.title like '%$search_title%' and b.author like '%$search_author%' and c.category_name like '%$search_category%'";
+    $total_result = mysqli_query($conn, $total_query);
+    $total_row = mysqli_fetch_assoc($total_result);
+    $total_books = $total_row['total'];
+    
+    $total_pages = ceil($total_books / $limit);
+
     $query = "select book_id , title , author , publication_date , price , quantity , category_name 
-        from books b left join categories c on c.category_id = b.category_id 
-        order by price asc 
-        LIMIT $limit OFFSET $offset;";
+    from books b left join categories c on c.category_id = b.category_id 
+    where b.title like '%$search_title%' and b.author like '%$search_author%' and c.category_name like '%$search_category%'
+    order by price $sort
+    LIMIT $limit OFFSET $offset;";
+
     $data = mysqli_query($conn, $query);
     if (!$data) {
         die("Query failed: " . mysqli_error($conn));
     }
-    $sort = 'asc';
-    $search_title = "";
-    $search_author = "";
-    $search_category = "";
     
 } else {
 
@@ -184,19 +187,19 @@ $result = mysqli_fetch_array($data);
     <?php
         echo "<div class='pagination'>";
         if ($page > 1) {
-            echo "<a href='?page=" . ($page - 1) . "'>&laquo; Trước</a> ";
+            echo "<a href='?page=" . ($page - 1) . "&search_title=".$search_title."&search_author=".$search_author."&search_category=".$search_category."'>&laquo; Trước</a> ";
         }
 
         for ($i = 1; $i <= $total_pages; $i++) {
             if ($i == $page) {
                 echo "<span class='current'>" . $i . "</span> ";
             } else {
-                echo "<a href='?page=" . $i . "'>" . $i . "</a> ";
+                echo "<a href='?page=" . $i . "&search_title=".$search_title."&search_author=".$search_author."&search_category=".$search_category."'>" . $i . "</a> ";
             }
         }
 
         if ($page < $total_pages) {
-            echo "<a href='?page=" . ($page + 1) . "'>Sau &raquo;</a>";
+            echo "<a href='?page=" . ($page + 1) . "&search_title=".$search_title."&search_author=".$search_author."&search_category=".$search_category."'>Sau &raquo;</a>";
         }
         echo "</div>";
         ?>
