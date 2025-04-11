@@ -1,23 +1,42 @@
 <?php
 include 'db_connect.php';
 
+$limit = 10;
+
+if (isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0) {
+    $page = $_GET['page'];
+} else {
+    $page = 1;
+}
+
+$offset = ($page - 1) * $limit;
+
+$total_query = "SELECT COUNT(*) AS total FROM books";
+$total_result = mysqli_query($conn, $total_query);
+$total_row = mysqli_fetch_assoc($total_result);
+$total_books = $total_row['total'];
+
+$total_pages = ceil($total_books / $limit);
 
 if ($_SERVER['REQUEST_METHOD'] ==  'GET') {
     $query = "select book_id , title , author , publication_date , price , quantity , category_name 
-        from books b left join categories c on c.category_id = b.category_id order by price asc;";
+        from books b left join categories c on c.category_id = b.category_id order by price asc LIMIT $limit OFFSET $offset;";
     $data = mysqli_query($conn, $query);
     if (!$data) {
         die("Query failed: " . mysqli_error($conn));
     }
     $sort = 'asc';
+    
 } else {
+
     $sort = $_POST['sort'];
+
     if ($sort == 'asc') {
         $query = "select book_id , title , author , publication_date , price , quantity , category_name 
-        from books b left join categories c on c.category_id = b.category_id order by price asc;";
+        from books b left join categories c on c.category_id = b.category_id order by price asc LIMIT $limit OFFSET $offset;";
     } else {
         $query = "select book_id , title , author , publication_date , price , quantity , category_name 
-        from books b left join categories c on c.category_id = b.category_id order by price desc;";
+        from books b left join categories c on c.category_id = b.category_id order by price desc LIMIT $limit OFFSET $offset;";
     }
     $data = mysqli_query($conn, $query);
     if (!$data) {
@@ -53,14 +72,34 @@ $result = mysqli_fetch_array($data);
     tr:nth-child(even) {
         background-color: #dddddd;
     }
+
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .pagination a,
+    .pagination span.current {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        text-decoration: none;
+        margin-right: 5px;
+    }
+
+    .pagination a:hover {
+        background-color: #f0f0f0;
+    }
+
+    .pagination span.current {
+        background-color: #ddd;
+        color: #333;
+    }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script>
     function areYouSure() {
-        if(confirm("ARE YOU SURE THAT YOU WANT TO DELETE?"))
-        {
+        if (confirm("ARE YOU SURE THAT YOU WANT TO DELETE?")) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -121,6 +160,25 @@ $result = mysqli_fetch_array($data);
         }
         ?>
     </table>
+    <?php
+        echo "<div class='pagination'>";
+        if ($page > 1) {
+            echo "<a href='?page=" . ($page - 1) . "'>&laquo; Trước</a> ";
+        }
+
+        for ($i = 1; $i <= $total_pages; $i++) {
+            if ($i == $page) {
+                echo "<span class='current'>" . $i . "</span> ";
+            } else {
+                echo "<a href='?page=" . $i . "'>" . $i . "</a> ";
+            }
+        }
+
+        if ($page < $total_pages) {
+            echo "<a href='?page=" . ($page + 1) . "'>Sau &raquo;</a>";
+        }
+        echo "</div>";
+        ?>
 
 </body>
 
