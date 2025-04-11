@@ -11,7 +11,7 @@ if (isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0) {
 
 $offset = ($page - 1) * $limit;
 
-$total_query = "SELECT COUNT(*) AS total FROM books";
+$total_query = "SELECT COUNT(*) AS total from books b left join categories c on c.category_id = b.category_id ";
 $total_result = mysqli_query($conn, $total_query);
 $total_row = mysqli_fetch_assoc($total_result);
 $total_books = $total_row['total'];
@@ -38,8 +38,13 @@ if ($_SERVER['REQUEST_METHOD'] ==  'GET') {
     $search_title = $_POST['search_title'];
     $search_author = $_POST['search_author'];
     $search_category = $_POST['search_category'];
-    var_dump($search_title);
 
+    $total_query = "SELECT COUNT(*) AS total from books b left join categories c on c.category_id = b.category_id where b.title like '%$search_title%' and b.author like '%$search_author%' and c.category_name like '%$search_category%'";
+    $total_result = mysqli_query($conn, $total_query);
+    $total_row = mysqli_fetch_assoc($total_result);
+    $total_books = $total_row['total'];
+    
+    $total_pages = ceil($total_books / $limit);
 
     $query = "select book_id , title , author , publication_date , price , quantity , category_name 
     from books b left join categories c on c.category_id = b.category_id 
