@@ -65,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     } else {
         $soluong = $_POST['soluong'];
     }
+    $danhmuc = $_POST['danhmuc'];
 
     if (empty($tensach_err) && empty($tacgia_err) && empty($date_err) && empty($gia_err) && empty($soluong_err)) {
         $sql = "update books set title=?, author=?, publication_date=?, price=?, quantity=?, category_id=? where book_id=?";
@@ -72,9 +73,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
         mysqli_stmt_bind_param($stmt, 'sssiiii', $tensach, $tacgia, $date, $gia, $soluong, $danhmuc, $book_id);
         mysqli_stmt_execute($stmt);
         if (mysqli_stmt_affected_rows($stmt) > 0) {
-            echo "Sua thong tin sach thanh cong";
+            echo "<div class='text-3xl font-bold uppercase'>Sửa thông tin sách thành công</div>";
+            echo '<button
+            class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer mt-4 w-fit flex justify-center"><a href="list_books.php">Quay lại trang danh sách</a></button>';
         } else {
-            echo "Sua thong tin sach khong thanh cong" . mysqli_error($conn);
+            echo "<div class='text-3xl font-bold uppercase'>Sửa thông tin sách không thành công, </div>";
         }
         mysqli_stmt_close($stmt);
     }
@@ -93,56 +96,92 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     <title>Trang sửa sách</title>
 </head>
 
-<body>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
 
-    <h2>Edit book</h2>
+    <h3 class="uppercase m-auto w-full text-2xl font-bold text-center my-4">Edit book</h3>
 
     <form action="edit_book.php" method="post">
-        <label for="book_id">Book ID</label>
-        <input type="text" id="book_id" name="book_id" value="<?= $book_id; ?>" readonly><br>
+        <ul
+            class="flex flex-col items-center justify-center w-fit gap-4 border-1 border-gray-300 p-4 rounded-lg shadow-md m-auto">
+            <li class="flex flex-row items-stretch justify-between gap-4 w-full">
+                <label for="book_id">Book ID</label>
+                <input class="px-2 bg-gray-400 border border-gray-500 rounded-lg" type="text" id="book_id"
+                    name="book_id" value="<?= $book_id; ?>" readonly>
+            </li>
 
-        <label for="tensach">Ten sach</label>
-        <?= $tensach_err; ?>
-        <br>
-        <input type="text" id="tensach" name="tensach" value="<?= $tensach; ?>"><br>
+            <li class="flex flex-row items-stretch justify-between gap-4 w-full">
+                <div class="w-1/2 flex flex-col justify-start text-left">
+                    <label for="tensach">Tên sách</label>
+                    <p class="text-red-500 italic font-light text-sm"><?= $tensach_err; ?></p>
+                </div>
 
-        <label for="tacgia">Tac gia</label>
-        <?= $tacgia_err; ?>
-        <br>
-        <input type="text" id="tacgia" name="tacgia" value="<?= $tacgia; ?>"><br>
+                <input class="px-2 bg-gray-400 border border-gray-500 rounded-lg" type="text" id="tensach"
+                    name="tensach" value="<?= $tensach; ?>">
+            </li>
 
-        <label for="date">Ngay xuat ban</label>
-        <?= $date_err; ?>
-        <br>
-        <input type="date" name="date" id="date" value="<?php echo htmlspecialchars($date); ?>"><br>
+            <li class="flex flex-row items-stretch justify-between gap-4 w-full">
+                <div class="w-1/2 flex flex-col justify-start text-left">
+                    <label for="tacgia">Tác giả</label>
+                    <p class="text-red-500 italic font-light text-sm"><?= $tacgia_err; ?></p>
+                </div>
 
-        <label for="gia">Gia</label>
-        <?= $gia_err; ?>
-        <br>
-        <input type="number" name="gia" id="gia" value="<?= $gia; ?>"><br>
+                <input class="px-2 bg-gray-400 border border-gray-500 rounded-lg" type="text" id="tacgia" name="tacgia"
+                    value="<?= $tacgia; ?>">
+            </li>
 
-        <label for="soluong">So luong</label>
-        <?= $soluong_err; ?>
-        <br>
-        <input type="number" name="soluong" id="soluong" value="<?= $soluong; ?>"><br>
+            <li class="flex flex-row items-stretch justify-between gap-4 w-full">
+                <div class="w-1/2 flex flex-col justify-start text-left">
+                    <label for="date">Ngày xuất bản</label>
+                    <p class="text-red-500 italic font-light text-sm"><?= $date_err; ?></p>
+                </div>
 
-        <label for="danhmuc">Danh muc</label>
-        <select name="danhmuc" id="danhmuc">
-            <?php
-            $sql = "select * from categories";
-            $result = mysqli_query($conn, $sql);
-            if (mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<option value='" . $row['category_id'] . "'>" . $row['category_name'] . "</option>";
-                }
-            } else {
-                echo "<option value=''>Khong co danh muc</option>";
-            }
-            ?>
-        </select><br>
+                <input class="px-2 bg-gray-400 border border-gray-500 rounded-lg" type="date" name="date" id="date"
+                    value="<?php echo htmlspecialchars($date); ?>">
+            </li>
 
-        <input type="submit" value="Sua thong tin sach">
+            <li class="flex flex-row items-stretch justify-between gap-4 w-full">
+                <div class="w-1/2 flex flex-col justify-start text-left">
+                    <label for="gia">Giá</label>
+                    <p class="text-red-500 italic font-light text-sm"><?= $gia_err; ?></p>
+                </div>
+
+                <input class="px-2 bg-gray-400 border border-gray-500 rounded-lg" type="number" name="gia" id="gia"
+                    value="<?= $gia; ?>">
+            </li>
+
+            <li class="flex flex-row items-stretch justify-between gap-4 w-full">
+                <div class="w-1/2 flex flex-col justify-start text-left">
+                    <label for="soluong">Số lượng</label>
+                    <p class="text-red-500 italic font-light text-sm"><?= $soluong_err; ?></p>
+                </div>
+
+                <input class="px-2 bg-gray-400 border border-gray-500 rounded-lg" type="number" name="soluong"
+                    id="soluong" value="<?= $soluong; ?>">
+            </li>
+
+            <li class="flex flex-row items-stretch justify-between gap-4 w-full">
+                <label for="danhmuc">Danh mục</label>
+                <select name="danhmuc" id="danhmuc">
+                    <?php
+                        $sql = "select * from categories";
+                        $result = mysqli_query($conn, $sql);
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $choice = $row['category_id'] == $danhmuc ? "selected" : "";
+                                echo "<option value='" . $row['category_id'] . "' " . $choice .">" . $row['category_name'] . "</option>";
+                            }
+                        } else {
+                            echo "<option value=''>Không có danh mục</option>";
+                        }
+                        ?>
+                </select>
+            </li>
+
+            <input type="submit" value="Sửa thông tin sách"
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer mt-4 w-full flex justify-center">
     </form>
+    <a class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer mt-4 w-full flex justify-center"
+        href="list_books.php">Huỷ</a>
 
 </body>
 

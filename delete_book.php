@@ -20,10 +20,14 @@ if (!$data) {
         <title>Trang xóa sách</title>
     </head>
 
-    <body>
-        <h2>Xóa sách</h2>
-        <p>Lệnh xóa sách có ID = <?php echo $book_id; ?> được thực hiện <?php echo $error ? "thất bại" : "thành công"; ?></p>
-        <a href="list_books.php">Quay trở lại danh sách</a>
+    <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+        <h3 class="uppercase m-auto w-full text-2xl font-bold text-center my-4">Xóa sách</h3>
+        <p class="font-bold text-xl text-gray-600 uppercase">Lệnh xóa sách có ID = <?php echo $book_id; ?> được thực
+            hiện
+            <?php echo $error ? "thất bại" : "thành công"; ?></p>
+        <a href="list_books.php"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer mt-4 w-full flex justify-center">Quay
+            trở lại danh sách</a>
     </body>
 
     </html>

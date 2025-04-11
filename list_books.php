@@ -37,38 +37,53 @@ $result = mysqli_fetch_array($data);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        table {
-            font-family: arial, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
-        }
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
 
-        td,
-        th {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
 
-        tr:nth-child(even) {
-            background-color: #dddddd;
-        }
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script>
+    function areYouSure() {
+        if(confirm("ARE YOU SURE THAT YOU WANT TO DELETE?"))
+        {
+            return true;
+        }else{
+            return false;
+        }
+    }
+    </script>
 </head>
 
 <body class="bg-gray-100 flex flex-col items-center justify-center w-4/5 m-auto">
     <h2 class="uppercase m-auto w-full text-2xl font-bold text-center my-4">Danh sách sách</h2>
-    <form action="list_books.php" method="post" class="flex flex-row items-center justify-center w-fit gap-4 border-1 border-gray-300 p-4 rounded-lg shadow-md m-auto">
+    <form action="list_books.php" method="post"
+        class="flex flex-row items-center justify-center w-fit gap-4 border-1 border-gray-300 p-4 rounded-lg shadow-md m-auto">
         <label for="sort">Sắp xếp theo giá: </label>
         <select id="sort" name="sort" class="bg-gray-500 text-white py-2 px-4 rounded-lg hover:cursor-pointer">
-            <option value="asc" <?php echo $sort == 'asc' ? "selected" : "" ?> class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Tăng dần</option>
-            <option value="des" <?php echo $sort == 'des' ? "selected" : "" ?> class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Giảm dần</option>
+            <option value="asc" <?php echo $sort == 'asc' ? "selected" : "" ?>
+                class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Tăng dần</option>
+            <option value="des" <?php echo $sort == 'des' ? "selected" : "" ?>
+                class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Giảm dần</option>
         </select>
-        <input type="submit" value="Sắp xếp" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer">
+        <input type="submit" value="Sắp xếp"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer">
     </form>
     <form action="add_book.php" method="get">
-        <input type="submit" value="Thêm sách" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer my-4">
+        <input type="submit" value="Thêm sách"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer my-4">
     </form>
     <table>
         <tr>
@@ -100,7 +115,7 @@ $result = mysqli_fetch_array($data);
                 echo "<td>" . $row['quantity'] . "</td>";
                 echo "<td>" . $category_name . "</td>";
                 echo "<td><a href='edit_book.php?id=" . $row['book_id'] . "' class='p-2 rounded-lg bg-orange-500 hover:cursor-pointer font-bold text-white hover:bg-orange-300'>Edit</a></td>";
-                echo "<td><a href='delete_book.php?id=" . $row['book_id'] . "' class='p-2 rounded-lg bg-red-500 hover:cursor-pointer font-bold text-white hover:bg-red-300'>Delete</a></td>";
+                echo "<td><a href='delete_book.php?id=" . $row['book_id'] . "' class='p-2 rounded-lg bg-red-500 hover:cursor-pointer font-bold text-white hover:bg-red-300' onclick='return areYouSure()'>Delete</a></td>";
                 echo "</tr>";
             }
         }
