@@ -20,24 +20,33 @@ $total_pages = ceil($total_books / $limit);
 
 if ($_SERVER['REQUEST_METHOD'] ==  'GET') {
     $query = "select book_id , title , author , publication_date , price , quantity , category_name 
-        from books b left join categories c on c.category_id = b.category_id order by price asc LIMIT $limit OFFSET $offset;";
+        from books b left join categories c on c.category_id = b.category_id 
+        order by price asc 
+        LIMIT $limit OFFSET $offset;";
     $data = mysqli_query($conn, $query);
     if (!$data) {
         die("Query failed: " . mysqli_error($conn));
     }
     $sort = 'asc';
+    $search_title = "";
+    $search_author = "";
+    $search_category = "";
     
 } else {
 
     $sort = $_POST['sort'];
+    $search_title = $_POST['search_title'];
+    $search_author = $_POST['search_author'];
+    $search_category = $_POST['search_category'];
+    var_dump($search_title);
 
-    if ($sort == 'asc') {
-        $query = "select book_id , title , author , publication_date , price , quantity , category_name 
-        from books b left join categories c on c.category_id = b.category_id order by price asc LIMIT $limit OFFSET $offset;";
-    } else {
-        $query = "select book_id , title , author , publication_date , price , quantity , category_name 
-        from books b left join categories c on c.category_id = b.category_id order by price desc LIMIT $limit OFFSET $offset;";
-    }
+
+    $query = "select book_id , title , author , publication_date , price , quantity , category_name 
+    from books b left join categories c on c.category_id = b.category_id 
+    where b.title like '%$search_title%' and b.author like '%$search_author%' and c.category_name like '%$search_category%'
+    order by price $sort
+    LIMIT $limit OFFSET $offset;";
+
     $data = mysqli_query($conn, $query);
     if (!$data) {
         die("Query failed: " . mysqli_error($conn));
@@ -108,16 +117,23 @@ $result = mysqli_fetch_array($data);
 
 <body class="bg-gray-100 flex flex-col items-center justify-center w-4/5 m-auto">
     <h2 class="uppercase m-auto w-full text-2xl font-bold text-center my-4">Danh sách sách</h2>
-    <form action="list_books.php" method="post"
-        class="flex flex-row items-center justify-center w-fit gap-4 border-1 border-gray-300 p-4 rounded-lg shadow-md m-auto">
-        <label for="sort">Sắp xếp theo giá: </label>
-        <select id="sort" name="sort" class="bg-gray-500 text-white py-2 px-4 rounded-lg hover:cursor-pointer">
-            <option value="asc" <?php echo $sort == 'asc' ? "selected" : "" ?>
-                class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Tăng dần</option>
-            <option value="des" <?php echo $sort == 'des' ? "selected" : "" ?>
-                class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Giảm dần</option>
-        </select>
-        <input type="submit" value="Sắp xếp"
+    <form action="list_books.php" method="post" class="flex flex-col items-center justify-center w-fit gap-4 border-1 border-gray-300 p-4 rounded-lg shadow-md m-auto">
+        <div
+            class="flex flex-row items-center justify-center w-fit gap-4 m-auto">
+            <label for="sort">Sắp xếp theo giá: </label>
+            <select id="sort" name="sort" class="bg-gray-500 text-white py-2 px-4 rounded-lg hover:cursor-pointer">
+                <option value="asc" <?php echo $sort == 'asc' ? "selected" : "" ?>
+                    class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Tăng dần</option>
+                <option value="desc" <?php echo $sort == 'desc' ? "selected" : "" ?>
+                    class="block px-4 py-2 hover:bg-gray-100 bg-white text-black">Giảm dần</option>
+            </select>
+        </div>
+        <div>
+            <input class="bg-gray-200 rounded-lg p-2" type="text" name="search_title" placeholder="Tìm kiếm theo tên sách" value = <?= $search_title ?>>
+            <input class="bg-gray-200 rounded-lg p-2" type="text" name="search_author" placeholder="Tìm kiếm theo tác giả" value = <?= $search_author ?>>
+            <input class="bg-gray-200 rounded-lg p-2" type="text" name="search_category" placeholder="Tìm kiếm theo danh mục" value = <?= $search_category ?>>
+        </div>
+        <input type="submit" value="Tìm kiếm và sắp xếp"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg hover:cursor-pointer">
     </form>
     <form action="add_book.php" method="get">
